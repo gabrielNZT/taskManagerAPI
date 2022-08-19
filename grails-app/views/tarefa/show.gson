@@ -1,0 +1,7 @@
+import taskmanagerapi.Tarefa
+
+model {
+	Tarefa tarefa
+}
+
+json tmpl.tarefa(tarefa)

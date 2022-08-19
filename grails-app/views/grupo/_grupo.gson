@@ -1,0 +1,12 @@
+import taskmanagerapi.Grupo
+
+model {
+	Grupo grupo
+}
+
+json {
+	id grupo.id
+	title grupo.title
+	index grupo.index
+	cards grupo.getCards()
+}

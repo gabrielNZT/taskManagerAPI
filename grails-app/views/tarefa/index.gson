@@ -1,0 +1,8 @@
+import taskmanagerapi.Tarefa
+
+model {
+	Iterable<Tarefa> tarefaList
+}
+
+json tmpl.tarefa(tarefaList ?: [])
+
