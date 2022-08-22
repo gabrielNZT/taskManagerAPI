@@ -8,5 +8,6 @@ json {
 	id grupo.id
 	title grupo.title
 	index grupo.index
-	cards grupo.getCards()
+	cards g.render(template: "tarefa", collection: grupo.cards, var: "tarefa")
+
 }

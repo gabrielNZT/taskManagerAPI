@@ -1,7 +1,7 @@
 import taskmanagerapi.Grupo
 
 model {
-	Iterable<Grupo> grupoList
+	List<Grupo> grupoList
 }
 
 json tmpl.grupo(grupoList ?: [])

@@ -6,7 +6,7 @@ class Tarefa {
     String description
     Integer index
 
-    static belongsTo = [grupo: Grupo]
+    static belongsTo = [grupo:Grupo]
 
     static constraints = {
         title maxSize: 255, nullable: false
