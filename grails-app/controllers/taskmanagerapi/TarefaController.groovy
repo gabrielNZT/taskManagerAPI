@@ -79,6 +79,12 @@ class TarefaController {
             respond status: NOT_FOUND
             return
         }
+        for(Tarefa tarefa: Tarefa.list()){
+            if(tarefa.getIndex() > tarefaService.get(id).getIndex()){
+                tarefa.setIndex(tarefa.getIndex() - 1)
+            }
+        }
+
         tarefaService.delete(id)
         respond status: NO_CONTENT
     }

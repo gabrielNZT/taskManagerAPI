@@ -13,6 +13,6 @@ class Grupo {
 
     static constraints = {
         title maxSize: 255, nullable: false
-        index nullable: false, unique: true
+        index nullable: false, unique: false
     }
 }
