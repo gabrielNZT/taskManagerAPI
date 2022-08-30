@@ -1,0 +1,5 @@
+model {
+	Requestmap requestmap
+}
+
+json g.render(requestmap, [resolveTemplate: false])

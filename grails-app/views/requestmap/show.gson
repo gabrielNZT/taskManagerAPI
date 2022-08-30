@@ -1,0 +1,5 @@
+model {
+	Requestmap requestmap
+}
+
+json tmpl.requestmap(requestmap)

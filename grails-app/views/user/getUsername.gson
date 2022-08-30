@@ -1,0 +1,9 @@
+import security.User
+
+model {
+    User user
+}
+json {
+    id user.id
+    username user.username
+}

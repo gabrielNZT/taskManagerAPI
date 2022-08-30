@@ -1,0 +1,6 @@
+model {
+	Iterable<Requestmap> requestmapList
+}
+
+json tmpl.requestmap(requestmapList ?: [])
+
