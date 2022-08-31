@@ -44,7 +44,7 @@ class BootStrap {
 
         Grupo Backlog = new Grupo(header: "BACKLOG", position: 0).save()
 
-        Tarefa card = new Tarefa(header: "card 1", position: 0, description: "nothing here", user: user_adm).save()
+        Tarefa card = new Tarefa(header: "card 1", position: 0, description: "nothing here", grupo: Backlog,user: user_adm).save()
     }
     def destroy = {
     }
