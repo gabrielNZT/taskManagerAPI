@@ -1,0 +1,12 @@
+import taskmanagerapi.Tarefa
+
+model {
+    Tarefa tarefa
+}
+
+json {
+    id tarefa?.id
+    index tarefa.position
+    title tarefa.header
+    description tarefa.description?: ""
+}

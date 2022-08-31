@@ -1,7 +1,19 @@
 import security.User
 
+
 model {
 	User user
 }
 
-json g.render(user, [resolveTemplate: false])
+json {
+	id user?.id
+	username user.username
+	email user.email
+	password user.password
+	enabled user.enabled
+	accountExpired user.accountExpired
+	accountLocked user.accountLocked
+	passwordExpired user.passwordExpired
+	cards g.render(template: "tarefa", collection: user.cards, var: "tarefa")
+}
+
