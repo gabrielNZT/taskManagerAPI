@@ -6,7 +6,7 @@ model {
 
 json {
     id tarefa?.id
-    index tarefa.index
-    title tarefa.title
+    index tarefa.position
+    title tarefa.header
     description tarefa.description?: ""
 }

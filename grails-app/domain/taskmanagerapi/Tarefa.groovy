@@ -1,16 +1,18 @@
 package taskmanagerapi
 
+import security.User
+
 class Tarefa {
 
-    String title
+    String header
     String description
-    Integer index
+    Integer position
 
-    static belongsTo = [grupo:Grupo]
+    static belongsTo = [grupo:Grupo, user: User]
 
     static constraints = {
-        title maxSize: 255, nullable: false
+        header maxSize: 255, nullable: false
         description maxSize: 255, nullable: true
-        index min: 0, nullable: false
+        position min: 0, nullable: false
     }
 }
