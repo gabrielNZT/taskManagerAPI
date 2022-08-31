@@ -1,0 +1,7 @@
+import security.Role
+
+model {
+	Role role
+}
+
+json tmpl.role(role)

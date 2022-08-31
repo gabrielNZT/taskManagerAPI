@@ -1,6 +1,7 @@
 package taskmanagerapi
 
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.annotation.Secured
 
 import javax.validation.ValidationException
 
@@ -10,6 +11,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 
+@Secured(['ROLE_USER', 'ROLE_ADMIN'])
 class TarefaController {
 
     static allowedMethods = [save: "POST", update: ["PUT", "POST"], patch: "PATCH", delete: "DELETE"]

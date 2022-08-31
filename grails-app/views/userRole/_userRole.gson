@@ -1,0 +1,7 @@
+import security.UserRole
+
+model {
+	UserRole userRole
+}
+
+json g.render(userRole, [resolveTemplate: false])

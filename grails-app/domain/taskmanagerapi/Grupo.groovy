@@ -1,9 +1,12 @@
 package taskmanagerapi
 
+import security.User
+
 class Grupo {
 
-    String title
-    Integer index
+    String header
+    Integer position
+
 
     static hasMany = [cards: Tarefa]
 
@@ -12,7 +15,7 @@ class Grupo {
     }
 
     static constraints = {
-        title maxSize: 255, nullable: false
-        index nullable: false, unique: false
+        header maxSize: 255, nullable: false
+        position nullable: false, unique: false
     }
 }
