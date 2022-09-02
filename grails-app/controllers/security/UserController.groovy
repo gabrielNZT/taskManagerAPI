@@ -2,11 +2,14 @@ package security
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
+
+import java.security.Principal
+
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY
+import static org.springframework.http.HttpStatus.CONFLICT
 
 import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Transactional
@@ -14,6 +17,7 @@ import grails.gorm.transactions.Transactional
 @ReadOnly
 class UserController {
 
+    def springSecurityService
     UserService userService
 
     static responseFormats = ['json', 'xml']
@@ -26,11 +30,21 @@ class UserController {
     }
 
     @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    def currentUser() {
+        def current  = springSecurityService.principal
+
+    }
+
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def show(Long id) {
         respond userService.get(id)
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    def getId (String username) {
+       respond User.findByUsername(username)
+    }
+
     @Transactional
     def save(User user) {
         if (user == null) {
@@ -85,5 +99,12 @@ class UserController {
         }
 
         render status: NO_CONTENT
+    }
+
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    @Transactional
+    def current() {
+        User user = userService.get(springSecurityService.principal.id)
+        respond user
     }
 }

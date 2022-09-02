@@ -80,8 +80,8 @@ class GrupoController {
         }
 
         for(Grupo grupo: Grupo.list()){
-            if(grupo.getIndex() > grupoService.get(id).getIndex()){
-                grupo.setIndex(grupo.getIndex() - 1)
+            if(grupo.getPosition() > grupoService.get(id).getPosition()){
+                grupo.setPosition(grupo.getPosition() - 1)
             }
         }
 
