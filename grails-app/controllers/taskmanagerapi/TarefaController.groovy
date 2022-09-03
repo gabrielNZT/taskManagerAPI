@@ -23,6 +23,7 @@ class TarefaController {
         def model= [
                 tarefaList: Tarefa.list()
         ]
+        respond model
     }
 
     def show(Long id){
@@ -82,8 +83,8 @@ class TarefaController {
             return
         }
         for(Tarefa tarefa: Tarefa.list()){
-            if(tarefa.getIndex() > tarefaService.get(id).getIndex()){
-                tarefa.setIndex(tarefa.getIndex() - 1)
+            if(tarefa.getPosition() > tarefaService.get(id).getPosition()){
+                tarefa.setPosition(tarefa.getPosition() - 1)
             }
         }
 

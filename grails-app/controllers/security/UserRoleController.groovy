@@ -2,6 +2,8 @@ package security
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
+
+import static org.springframework.http.HttpStatus.CONFLICT
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
@@ -12,7 +14,6 @@ import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Transactional
 
 @ReadOnly
-@Secured(['ROLE_ADMIN'])
 class UserRoleController {
 
     UserRoleService userRoleService
@@ -20,11 +21,13 @@ class UserRoleController {
     static responseFormats = ['json', 'xml']
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
+    @Secured(['ROLE_ADMIN'])
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         respond userRoleService.list(params), model:[userRoleCount: userRoleService.count()]
     }
 
+    @Secured(['ROLE_ADMIN'])
     def show(Long id) {
         respond userRoleService.get(id)
     }
@@ -51,6 +54,7 @@ class UserRoleController {
         respond userRole, [status: CREATED, view:"show"]
     }
 
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def update(UserRole userRole) {
         if (userRole == null) {
@@ -73,6 +77,7 @@ class UserRoleController {
         respond userRole, [status: OK, view:"show"]
     }
 
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def delete(Long id) {
         if (id == null || userRoleService.delete(id) == null) {
