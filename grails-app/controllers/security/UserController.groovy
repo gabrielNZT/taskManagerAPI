@@ -31,8 +31,8 @@ class UserController {
 
     @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def currentUser() {
-        def current  = springSecurityService.principal
-
+        User user = userService.get(springSecurityService.principal.id)
+        respond user, [status: OK]
     }
 
     @Secured(['ROLE_ADMIN', 'ROLE_USER'])
@@ -40,30 +40,38 @@ class UserController {
         respond userService.get(id)
     }
 
-    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
-    def getId (String username) {
-       respond User.findByUsername(username)
-    }
-
     @Transactional
     def save(User user) {
-        if (user == null) {
-            render status: NOT_FOUND
-            return
-        }
-        if (user.hasErrors()) {
-            transactionStatus.setRollbackOnly()
-            respond user.errors
+        if(User.findByUsername(user.username) != null){
+            render status: CONFLICT
             return
         }
 
-        try {
-            userService.save(user)
-        } catch (ValidationException e) {
-            respond user.errors
-            return
-        }
+        else if(User.findByUsername(user.username) == null){
+            User newUser = new User(
+                    username: user.username,
+                    email: user.email,
+                    password: user.password,
+                    adm: user.adm,
+                    enabled: user.enabled,
+                    accountExpired: user.accountExpired,
+                    accountLocked: user.accountLocked,
+                    passwordExpired: user.passwordExpired
+            )
 
+            try {
+                userService.save(user)
+            } catch (ValidationException e){
+                respond user.errors
+                return
+            }
+
+            if(user.adm){
+                new UserRole(user: User.findByUsername(user.username).id, role: Role.findByAuthority('ROLE_USER').id).save(flush: true)
+            } else {
+                new UserRole(user: User.findByUsername(user.username).id, role: Role.findByAuthority('ROLE_ADMIN').id).save(flush: true)
+            }
+        }
         respond user, [status: CREATED, view:"show"]
     }
 

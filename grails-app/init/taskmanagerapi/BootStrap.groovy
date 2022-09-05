@@ -24,13 +24,13 @@ class BootStrap {
 
         User user_adm = User.findByUsername("administrador")
         if( user_adm == null){
-            user_adm = new User(username: "admin", password: "123", email: 'admin@gmail.com', enabled: true,
+            user_adm = new User(username: "admin", password: "123", email: 'admin@gmail.com', adm: true, enabled: true,
                     accountExpired: false, accountLocked: false, passwordExpired: false).save(flush: true)
         }
 
         User user_user = User.findByUsername("user")
         if( user_user == null){
-            user_user = new User(username: "user", password: "123", email: 'user@gmail.com', enabled: true,
+            user_user = new User(username: "user", password: "123", email: 'user@gmail.com', adm: false, enabled: true,
                     accountExpired: false, accountLocked: false, passwordExpired: false).save(flush: true)
         }
 
