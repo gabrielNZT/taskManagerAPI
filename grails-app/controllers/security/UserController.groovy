@@ -67,9 +67,9 @@ class UserController {
             }
 
             if(user.adm){
-                new UserRole(user: User.findByUsername(user.username).id, role: Role.findByAuthority('ROLE_USER').id).save(flush: true)
-            } else {
                 new UserRole(user: User.findByUsername(user.username).id, role: Role.findByAuthority('ROLE_ADMIN').id).save(flush: true)
+            } else {
+                new UserRole(user: User.findByUsername(user.username).id, role: Role.findByAuthority('ROLE_USER').id).save(flush: true)
             }
         }
         respond user, [status: CREATED, view:"show"]

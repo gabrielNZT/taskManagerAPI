@@ -1,0 +1,7 @@
+import taskmanagerapi.UserCard
+
+model {
+	UserCard userCard
+}
+
+json g.render(userCard, [resolveTemplate: false])

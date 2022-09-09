@@ -8,7 +8,13 @@ class Tarefa {
     String description
     Integer position
 
-    static belongsTo = [grupo:Grupo, user: User]
+    static belongsTo = [grupo:Grupo]
+
+    static hasMany = [userCard : UserCard]
+
+    static mapping = {
+        userCard cascade: 'all-delete-orphan'
+    }
 
     static constraints = {
         header maxSize: 255, nullable: false

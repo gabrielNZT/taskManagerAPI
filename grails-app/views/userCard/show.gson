@@ -1,0 +1,7 @@
+import taskmanagerapi.UserCard
+
+model {
+	UserCard userCard
+}
+
+json tmpl.userCard(userCard)

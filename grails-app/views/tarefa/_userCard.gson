@@ -1,0 +1,11 @@
+import taskmanagerapi.UserCard
+
+model {
+    UserCard userCard
+}
+
+json {
+    id userCard?.id
+    date userCard.date
+    user g.render(template: "user", model: [user: userCard.user])
+}

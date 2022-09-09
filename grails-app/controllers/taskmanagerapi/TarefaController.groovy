@@ -18,6 +18,7 @@ class TarefaController {
     static responseFormats = ['json', 'xml']
 
     TarefaService tarefaService
+    GrupoService grupoService
 
     def index(){
         def model= [
@@ -54,6 +55,57 @@ class TarefaController {
     }
 
     @Transactional
+    def moveCard(){
+
+        Tarefa tarefa = new Tarefa()
+        tarefa.properties = request
+
+        if(tarefa == null){
+            respond status: BAD_REQUEST
+            return
+        }
+
+        if(tarefa.hasErrors()){
+            transactionStatus.setRollbackOnly()
+            respond tarefa.errors
+            return
+        }
+
+        Tarefa updateCard = tarefa
+        Tarefa card = Tarefa.get(params.id)
+
+        try{
+            //has change group
+            if(card.grupo != updateCard.grupo){
+                card.setGrupo(updateCard.grupo)
+                for(Tarefa element : Tarefa.findAllByGrupo(card.grupo)){
+                    if(element.position > card.position && element != card){
+                        element.setPosition((element.position - 1))
+                    }
+                }
+
+                for(Tarefa element : Tarefa.findAllByGrupo(updateCard.grupo)){
+                    if(element.position >= updateCard.position && element != card){
+                        element.setPosition((element.position + 1))
+                    }
+                }
+            } else { // same group
+                for(Tarefa element : Tarefa.findAllByGrupo(updateCard.grupo)){
+                    if(element.position >= updateCard.position && element != card){
+                        element.setPosition((element.position + 1))
+                    }
+                }
+            }
+            card.setPosition(updateCard.position)
+        }catch(ValidationException e){
+            respond(tarefa.errors)
+            return
+        }
+
+        respond tarefa, [status: OK, view:"show"]
+    }
+
+    @Transactional
     def update(Tarefa tarefa){
         if(tarefa == null){
             respond status: BAD_REQUEST
@@ -82,9 +134,9 @@ class TarefaController {
             respond status: NOT_FOUND
             return
         }
-        for(Tarefa tarefa: Tarefa.list()){
-            if(tarefa.getPosition() > tarefaService.get(id).getPosition()){
-                tarefa.setPosition(tarefa.getPosition() - 1)
+        for(Tarefa tarefa: Tarefa.findAllByGrupo(tarefaService.get(id).grupo)){
+                if(tarefa.getPosition() > tarefaService.get(id).getPosition()){
+                    tarefa.setPosition(tarefa.getPosition() - 1)
             }
         }
 

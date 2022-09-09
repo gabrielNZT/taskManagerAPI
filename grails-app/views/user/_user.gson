@@ -9,11 +9,7 @@ json {
 	id user?.id
 	username user.username
 	email user.email
-	password user.password
+	adm user.adm
 	enabled user.enabled
-	accountExpired user.accountExpired
-	accountLocked user.accountLocked
-	passwordExpired user.passwordExpired
-	cards g.render(template: "tarefa", collection: user.cards, var: "tarefa")
 }
 

@@ -1,0 +1,8 @@
+import taskmanagerapi.UserCard
+
+model {
+	Iterable<UserCard> userCardList
+}
+
+json tmpl.userCard(userCardList ?: [])
+

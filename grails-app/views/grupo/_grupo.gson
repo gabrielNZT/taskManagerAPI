@@ -6,8 +6,7 @@ model {
 
 json {
 	id grupo.id
-	title grupo.header
-	index grupo.position
+	header grupo.header
+	position grupo.position
 	cards g.render(template: "tarefa", collection: grupo.cards, var: "tarefa")
-
 }
