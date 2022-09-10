@@ -74,10 +74,8 @@ class TarefaController {
         Tarefa updateCard = tarefa
         Tarefa card = Tarefa.get(params.id)
 
-        try{
             //has change group
             if(card.grupo != updateCard.grupo){
-                card.setGrupo(updateCard.grupo)
                 for(Tarefa element : Tarefa.findAllByGrupo(card.grupo)){
                     if(element.position > card.position && element != card){
                         element.setPosition((element.position - 1))
@@ -91,17 +89,24 @@ class TarefaController {
                 }
             } else { // same group
                 for(Tarefa element : Tarefa.findAllByGrupo(updateCard.grupo)){
-                    if(element.position >= updateCard.position && element != card){
-                        element.setPosition((element.position + 1))
+                    // card is going up?
+                    //going down
+                    if( updateCard.position > card.position ){
+                        if(element.position > card.position && element.position <= updateCard.position && element.id != card.id){
+                            element.setPosition((element.position - 1))
+                        }
+                    }
+                        //going up
+                    else if( updateCard.position < card.position ){
+                        if( element.position <card.position && element.position >= updateCard.position && element.id != card.id){
+                            element.setPosition((element.position + 1))
+                        }
                     }
                 }
             }
+            card.setVersion(card.version + 1)
+            card.setGrupo(updateCard.grupo)
             card.setPosition(updateCard.position)
-        }catch(ValidationException e){
-            respond(tarefa.errors)
-            return
-        }
-
         respond tarefa, [status: OK, view:"show"]
     }
 
@@ -120,7 +125,7 @@ class TarefaController {
 
         try{
             tarefaService.save(tarefa)
-        }catch(ValidationException e){
+        }catch(ValidationException ignored){
             respond tarefa.errors
             return
         }
