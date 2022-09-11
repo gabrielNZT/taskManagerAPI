@@ -1,7 +1,10 @@
 package taskmanagerapi
 
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
+import security.User
+import security.UserService
 
 import javax.validation.ValidationException
 
@@ -18,7 +21,8 @@ class TarefaController {
     static responseFormats = ['json', 'xml']
 
     TarefaService tarefaService
-    GrupoService grupoService
+    SpringSecurityService springSecurityService
+    UserCardService userCardService
 
     def index(){
         def model= [
@@ -49,6 +53,10 @@ class TarefaController {
         }catch(ValidationException e){
             respond(tarefa.errors)
             return
+        } finally {
+            def user = User.get(springSecurityService.principal.id)
+            UserCard userCard = new UserCard(user: user, date: new Date(), card: tarefa)
+            userCardService.save(userCard)
         }
 
         respond tarefa, [status: CREATED, view:"show"]
@@ -60,6 +68,7 @@ class TarefaController {
         Tarefa tarefa = new Tarefa()
         tarefa.properties = request
 
+
         if(tarefa == null){
             respond status: BAD_REQUEST
             return
@@ -70,9 +79,13 @@ class TarefaController {
             respond tarefa.errors
             return
         }
+        def user = User.get(springSecurityService.principal.id)
 
         Tarefa updateCard = tarefa
         Tarefa card = Tarefa.get(params.id)
+
+        UserCard userCard = new UserCard(user: user, date: new Date(), card: card)
+        userCardService.save(userCard)
 
             //has change group
             if(card.grupo != updateCard.grupo){
@@ -128,6 +141,10 @@ class TarefaController {
         }catch(ValidationException ignored){
             respond tarefa.errors
             return
+        } finally {
+            def user = User.get(springSecurityService.principal.id)
+            UserCard userCard = new UserCard(user: user, date: new Date(), card: tarefa)
+            userCardService.save(userCard)
         }
 
         respond tarefa, [status: OK, view:"show"]
