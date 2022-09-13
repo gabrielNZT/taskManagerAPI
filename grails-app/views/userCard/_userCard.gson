@@ -4,4 +4,9 @@ model {
 	UserCard userCard
 }
 
-json g.render(userCard, [resolveTemplate: false])
+json {
+	id userCard.id
+	date userCard.date
+	user g.render(template: 'user', model: [user: userCard.user])
+	card g.render(template: "tarefa", model: [tarefa: userCard.card])
+}

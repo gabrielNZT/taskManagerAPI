@@ -2,6 +2,8 @@ package security
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
+import taskmanagerapi.UserCard
+import taskmanagerapi.UserCardService
 
 import java.security.Principal
 
@@ -19,6 +21,7 @@ class UserController {
 
     def springSecurityService
     UserService userService
+    UserCardService userCardService
 
     static responseFormats = ['json', 'xml']
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
@@ -101,11 +104,12 @@ class UserController {
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def delete(Long id) {
-        if (id == null || userService.delete(id) == null) {
+        if (id == null || userService.get(id) == null) {
             render status: NOT_FOUND
             return
         }
-
+        UserRole.removeAll(User.get(id))
+        userService.delete(id)
         render status: NO_CONTENT
     }
 

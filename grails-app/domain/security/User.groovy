@@ -5,6 +5,7 @@ import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
 import taskmanagerapi.Grupo
 import taskmanagerapi.Tarefa
+import taskmanagerapi.UserCard
 
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='username')

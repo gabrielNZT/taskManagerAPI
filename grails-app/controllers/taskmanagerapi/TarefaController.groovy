@@ -64,7 +64,6 @@ class TarefaController {
 
     @Transactional
     def moveCard(){
-
         Tarefa tarefa = new Tarefa()
         tarefa.properties = request
 

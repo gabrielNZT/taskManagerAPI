@@ -2,8 +2,6 @@ package taskmanagerapi
 
 import security.User
 
-
-
 class UserCard {
     User user
     Date date
