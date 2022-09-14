@@ -1,6 +1,7 @@
 package taskmanagerapi
 
 import grails.gorm.transactions.Transactional
+import grails.plugins.mail.MailService
 import security.Role
 import security.User
 import security.UserRole

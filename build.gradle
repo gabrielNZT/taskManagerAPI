@@ -33,6 +33,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     compileOnly "io.micronaut:micronaut-inject-groovy"
     console "org.grails:grails-console"
+    implementation 'org.grails.plugins:mail:3.0.0'
     implementation "org.grails.plugins:spring-security-core:4.0.3"
     implementation "org.grails.plugins:spring-security-rest:3.0.1"
     implementation "org.springframework.boot:spring-boot-starter-logging"

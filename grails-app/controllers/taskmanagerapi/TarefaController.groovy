@@ -3,10 +3,13 @@ package taskmanagerapi
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
+import grails.plugins.mail.MailService
+import org.springframework.beans.factory.annotation.Autowired
 import security.User
-import security.UserService
 
 import javax.validation.ValidationException
+import java.util.stream.Collector
+import java.util.stream.Stream
 
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
@@ -23,11 +26,18 @@ class TarefaController {
     TarefaService tarefaService
     SpringSecurityService springSecurityService
     UserCardService userCardService
+    MailService mailService
+    ArrayList<String> receiveEmailTo = new ArrayList<>()
 
     def index(){
         def model= [
                 tarefaList: Tarefa.list()
         ]
+        mailService.sendMail {
+            to "dashboard.nzt@hotmail.com"
+            subject "New user"
+            text "A new user has been created"
+        }
         respond model
     }
 
@@ -142,6 +152,11 @@ class TarefaController {
             return
         } finally {
             def user = User.get(springSecurityService.principal.id)
+            UserCard.findAllByCard(Tarefa.get(tarefa.id)).forEach(map -> {
+                if(user != map.user && !receiveEmailTo.contains(map.user.getEmail()) && map.user.receiveEmail){
+                    receiveEmailTo.add(map.user.getEmail())
+                }
+            })
             UserCard userCard = new UserCard(user: user, date: new Date(), card: tarefa)
             userCardService.save(userCard)
         }

@@ -20,9 +20,11 @@ class UserCardController {
     static responseFormats = ['json', 'xml']
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond userCardService.list(params), model:[userCardCount: userCardService.count()]
+    def index() {
+        def model= [
+                userCardList: UserCard.list()
+        ]
+        respond model
     }
 
     def show(Long id) {
