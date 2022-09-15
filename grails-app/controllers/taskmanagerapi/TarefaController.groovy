@@ -27,17 +27,11 @@ class TarefaController {
     SpringSecurityService springSecurityService
     UserCardService userCardService
     MailService mailService
-    ArrayList<String> receiveEmailTo = new ArrayList<>()
 
     def index(){
-        def model= [
+        def model = [
                 tarefaList: Tarefa.list()
         ]
-        mailService.sendMail {
-            to "dashboard.nzt@hotmail.com"
-            subject "New user"
-            text "A new user has been created"
-        }
         respond model
     }
 
@@ -92,7 +86,7 @@ class TarefaController {
 
         Tarefa updateCard = tarefa
         Tarefa card = Tarefa.get(params.id)
-
+        sendMessage(user, card)
         UserCard userCard = new UserCard(user: user, date: new Date(), card: card)
         userCardService.save(userCard)
 
@@ -152,11 +146,7 @@ class TarefaController {
             return
         } finally {
             def user = User.get(springSecurityService.principal.id)
-            UserCard.findAllByCard(Tarefa.get(tarefa.id)).forEach(map -> {
-                if(user != map.user && !receiveEmailTo.contains(map.user.getEmail()) && map.user.receiveEmail){
-                    receiveEmailTo.add(map.user.getEmail())
-                }
-            })
+            sendMessage(user, tarefa)
             UserCard userCard = new UserCard(user: user, date: new Date(), card: tarefa)
             userCardService.save(userCard)
         }
@@ -178,5 +168,21 @@ class TarefaController {
 
         tarefaService.delete(id)
         respond status: NO_CONTENT
+    }
+
+    def sendMessage(User currentUser, Tarefa card){
+        ArrayList<String> receiveEmailTo = new ArrayList<>()
+
+        UserCard.findAllByCard(Tarefa.get(card.id)).forEach(map -> {
+            if(currentUser != map.user && !receiveEmailTo.contains(map.user.getEmail()) && map.user.receiveEmail){
+                receiveEmailTo.add(map.user.getEmail())
+            }
+        })
+
+        mailService.sendMail {
+            to receiveEmailTo
+            subject "Dashboard"
+            text "Ocorreu uma atualização"
+        }
     }
 }
