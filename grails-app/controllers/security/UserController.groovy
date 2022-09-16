@@ -8,6 +8,7 @@ import taskmanagerapi.UserCardService
 import java.security.Principal
 
 import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
@@ -21,7 +22,6 @@ class UserController {
 
     def springSecurityService
     UserService userService
-    UserCardService userCardService
 
     static responseFormats = ['json', 'xml']
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
@@ -78,7 +78,7 @@ class UserController {
         respond user, [status: CREATED, view:"show"]
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     @Transactional
     def update(User user) {
         if (user == null) {
@@ -88,6 +88,13 @@ class UserController {
         if (user.hasErrors()) {
             transactionStatus.setRollbackOnly()
             respond user.errors
+            return
+        }
+
+        User currentUser = userService.get(springSecurityService.principal.id)
+        Role roleCurrentUser = UserRole.findByUser(currentUser).role
+        if(roleCurrentUser.getAuthority() == 'ROLE_USER' && currentUser.id != user.id){
+            render status: FORBIDDEN
             return
         }
 

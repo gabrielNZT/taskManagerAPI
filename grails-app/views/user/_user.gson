@@ -11,5 +11,6 @@ json {
 	email user.email
 	adm user.adm
 	enabled user.enabled
+	receiveEmail user.receiveEmail
 }
 

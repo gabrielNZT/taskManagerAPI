@@ -4,13 +4,8 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
-import org.springframework.beans.factory.annotation.Autowired
 import security.User
-
 import javax.validation.ValidationException
-import java.util.stream.Collector
-import java.util.stream.Stream
-
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
@@ -86,7 +81,7 @@ class TarefaController {
 
         Tarefa updateCard = tarefa
         Tarefa card = Tarefa.get(params.id)
-        sendMessage(user, card)
+        sendMessage(user, card, 'MOVE')
         UserCard userCard = new UserCard(user: user, date: new Date(), card: card)
         userCardService.save(userCard)
 
@@ -146,7 +141,7 @@ class TarefaController {
             return
         } finally {
             def user = User.get(springSecurityService.principal.id)
-            sendMessage(user, tarefa)
+            sendMessage(user, tarefa, 'UPDATE')
             UserCard userCard = new UserCard(user: user, date: new Date(), card: tarefa)
             userCardService.save(userCard)
         }
@@ -170,7 +165,7 @@ class TarefaController {
         respond status: NO_CONTENT
     }
 
-    def sendMessage(User currentUser, Tarefa card){
+    def sendMessage(User currentUser, Tarefa card, String action){
         ArrayList<String> receiveEmailTo = new ArrayList<>()
 
         UserCard.findAllByCard(Tarefa.get(card.id)).forEach(map -> {
@@ -179,10 +174,26 @@ class TarefaController {
             }
         })
 
-        mailService.sendMail {
-            to receiveEmailTo
-            subject "Dashboard"
-            text "Ocorreu uma atualização"
+        String message
+        switch (action){
+            case 'MOVE':
+                message = "$currentUser.username Moveu a tarefa $card.header\nSe não quiser receber essas " +
+                        "atualizações desative a opção de notificações no menu"
+                break
+            case 'UPDATE':
+                message = "$currentUser.username Atualizou a tarefa $card.header\nSe não quiser receber essas " +
+                        "atualizações desative a opção de notificações no menu"
+                break
+            default:
+                return {  message = "Ocorreu uma mudança" }
+        }
+
+        if(receiveEmailTo.size() > 0){
+            mailService.sendMail {
+                to receiveEmailTo
+                subject "Dashboard"
+                text message
+            }
         }
     }
 }
