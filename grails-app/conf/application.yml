@@ -161,12 +161,12 @@ dataSource:
     driverClassName: com.mysql.cj.jdbc.Driver
     dialect: org.hibernate.dialect.MySQL8Dialect
     username: root
-    password: "123456"
+    password: "MySQL123"
 
 environments:
     development:
         dataSource:
-            dbCreate: create-drop
+            dbCreate: update
             url: jdbc:mysql://localhost:3306/taskmanager
     test:
         dataSource:

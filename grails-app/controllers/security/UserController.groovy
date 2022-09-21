@@ -27,8 +27,8 @@ class UserController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN'])
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+    def index(Integer pageSize) {
+        params.pageSize = Math.min(pageSize ?: 10, 100)
         respond userService.list(params), model:[userCount: userService.count()]
     }
 
@@ -69,11 +69,9 @@ class UserController {
                 return
             }
 
-            if(user.adm){
-                new UserRole(user: User.findByUsername(user.username).id, role: Role.findByAuthority('ROLE_ADMIN').id).save(flush: true)
-            } else {
-                new UserRole(user: User.findByUsername(user.username).id, role: Role.findByAuthority('ROLE_USER').id).save(flush: true)
-            }
+            String authority = user.adm? 'ROLE_ADMIN' : 'ROLE_USER'
+            new UserRole(user: User.findByUsername(user.username), role: Role.findByAuthority(authority)).save(flush: true)
+
         }
         respond user, [status: CREATED, view:"show"]
     }

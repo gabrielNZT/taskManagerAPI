@@ -83,43 +83,10 @@ class TarefaController {
         Tarefa oldCard = Tarefa.get(params.id)
         UserCard userCard = new UserCard(user: user, date: new Date(), card: oldCard)
         userCardService.save(userCard)
+        Tarefa cardUpdated = tarefaService.moveTarefa(oldCard, newCard, user);
 
-            //has change group
-            if(oldCard.grupo != newCard.grupo){
-                for(Tarefa element : Tarefa.findAllByGrupo(oldCard.grupo)){
-                    if(element.position > oldCard.position && element != oldCard){
-                        element.setPosition((element.position - 1))
-                    }
-                }
 
-                for(Tarefa element : Tarefa.findAllByGrupo(newCard.grupo)){
-                    if(element.position >= newCard.position && element != oldCard){
-                        element.setPosition((element.position + 1))
-                    }
-                }
-                sendMessage(user, newCard, oldCard, 'MOVE_CHANGE_GROUP')
-            } else { // same group
-                for(Tarefa element : Tarefa.findAllByGrupo(newCard.grupo)){
-                    // card is going up?
-                    //going down
-                    if( newCard.position > oldCard.position ){
-                        if(element.position > oldCard.position && element.position <= newCard.position && element.id != oldCard.id){
-                            element.setPosition((element.position - 1))
-                        }
-                    }
-                        //going up
-                    else if( newCard.position < oldCard.position ){
-                        if( element.position <oldCard.position && element.position >= newCard.position && element.id != oldCard.id){
-                            element.setPosition((element.position + 1))
-                        }
-                    }
-                }
-                sendMessage(user, newCard, oldCard, 'MOVE_SAME_GROUP')
-            }
-        oldCard.setVersion(oldCard.version + 1)
-        oldCard.setGrupo(newCard.grupo)
-        oldCard.setPosition(newCard.position)
-        respond tarefa, [status: OK, view:"show"]
+        respond cardUpdated, [status: OK, view:"show"]
     }
 
     @Transactional
@@ -146,13 +113,13 @@ class TarefaController {
             def user = User.get(springSecurityService.principal.id)
 
             if(oldTarefa.header != tarefa.header && tarefa.description != oldTarefa.description){
-                sendMessage(user, tarefa, oldTarefa, 'UPDATE_HEADER_DESCRIPTION')
+                tarefaService.sendMessage(user, tarefa, oldTarefa, 'UPDATE_HEADER_DESCRIPTION')
             }
             if(oldTarefa.header != tarefa.header ){
-                sendMessage(user, tarefa, oldTarefa, 'UPDATE_HEADER')
+                tarefaService.sendMessage(user, tarefa, oldTarefa, 'UPDATE_HEADER')
             }
             if(oldTarefa.description != tarefa.description){
-                sendMessage(user, tarefa, oldTarefa, 'UPDATE_DESCRIPTION')
+                tarefaService.sendMessage(user, tarefa, oldTarefa, 'UPDATE_DESCRIPTION')
             }
             oldTarefa.setHeader(tarefa.header)
             oldTarefa.setDescription(tarefa.description)
@@ -177,55 +144,5 @@ class TarefaController {
 
         tarefaService.delete(id)
         respond status: NO_CONTENT
-    }
-
-    def sendMessage(User currentUser, Tarefa newCard, Tarefa oldCard, String action){
-        ArrayList<String> receiveEmailTo = new ArrayList<>()
-
-        UserCard.findAllByCard(Tarefa.get(oldCard.id)).forEach(map -> {
-            if(currentUser != map.user && !receiveEmailTo.contains(map.user.getEmail()) && map.user.receiveEmail){
-                receiveEmailTo.add(map.user.getEmail())
-            }
-        })
-
-        String message
-        switch (action){
-            case 'MOVE_CHANGE_GROUP':
-                message = "$currentUser.username Moveu a tarefa $oldCard.header do " +
-                        "grupo $oldCard.grupo.header para " +
-                        "$newCard.grupo.header\nSe não quiser receber essas " +
-                        "atualizações desative a opção de notificações no menu"
-                break
-            case 'MOVE_SAME_GROUP':
-                message = "$currentUser.username moveu a tarefa $oldCard.header da posição " +
-                        "$oldCard.position para $newCard.position\nSe não quiser receber essas " +
-                        "atualizações desative a opção de notificações no menu"
-                break
-            case 'UPDATE_HEADER':
-                message = "$currentUser.username atualizou o nome da tarefa $oldCard.header " +
-                        "para $newCard.header\nSe não quiser receber essas " +
-                        "atualizações desative a opção de notificações no menu"
-                break
-            case 'UPDATE_DESCRIPTION':
-                message = "$currentUser.username atualizou a descrição da tarefa $oldCard.description " +
-                        "para $newCard.description\nSe não quiser receber essas " +
-                        "atualizações desative a opção de notificações no menu"
-                break
-            case 'UPDATE_HEADER_DESCRIPTION':
-                message = "$currentUser.username atualizou o nome e descrição da tarefa $oldCard.header " +
-                        "para $newCard.header e $newCard.description\nSe não quiser receber essas " +
-                        "atualizações desative a opção de notificações no menu"
-                break
-            default:
-                return {  message = "Ocorreu uma mudança" }
-        }
-
-        if(!receiveEmailTo.isEmpty()){
-            mailService.sendMail {
-                to receiveEmailTo
-                subject "Dashboard"
-                text message
-            }
-        }
     }
 }
