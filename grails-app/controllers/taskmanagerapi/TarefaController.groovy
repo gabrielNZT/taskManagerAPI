@@ -81,7 +81,7 @@ class TarefaController {
 
         Tarefa newCard = tarefa
         Tarefa oldCard = Tarefa.get(params.id)
-        UserCard userCard = new UserCard(user: user, date: new Date(), card: card)
+        UserCard userCard = new UserCard(user: user, date: new Date(), card: oldCard)
         userCardService.save(userCard)
 
             //has change group
