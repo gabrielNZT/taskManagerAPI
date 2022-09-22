@@ -27,9 +27,20 @@ class UserController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN'])
-    def index(Integer pageSize) {
-        params.pageSize = Math.min(pageSize ?: 10, 100)
-        respond userService.list(params), model:[userCount: userService.count()]
+    def index(Integer pageSize, Integer current, String sort, String field) {
+        def c = User.createCriteria()
+        Integer max = (pageSize * current)
+        Integer offset = (pageSize * (current - 1))
+        def results = c.list (max: max, offset: offset) {
+            order(field, sort)
+        }
+
+        def model = [
+                userList: results,
+                userCount: User.count()
+        ]
+
+        respond model
     }
 
     @Secured(['ROLE_ADMIN', 'ROLE_USER'])
