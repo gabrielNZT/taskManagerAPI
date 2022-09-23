@@ -59,6 +59,7 @@ class TarefaService {
                     }
                 }
             }
+            sendMessage(user, newCard, oldCard, 'MOVE_SAME_GROUP')
         }
         oldCard.setVersion(oldCard.version + 1)
         oldCard.setGrupo(newCard.grupo)
